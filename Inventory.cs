@@ -26,29 +26,45 @@ namespace econrpg
         public void printInventory()
         {   
             Console.WriteLine("These are the commodities in this inventory");
-            Console.WriteLine("Name\tQntd");
+            Console.WriteLine("Name\tQntd\tId");
             foreach (InventoryItem item in this.inventoryItems)
             {
-                Console.WriteLine($"{item.getCommodityName()}\t{item.getInventoryLevel()}");
+                Console.WriteLine($"{item.getCommodityName()}\t{item.getInventoryLevel()}\t{item.getCommodityId()}");
             }
         }
 
         public void startInventory(List<Commodity> commodities)
         {
+            inventoryItems.RemoveAll(item => true);
             foreach (Commodity commodity in commodities)
             {   
                 InventoryItem newItem = new InventoryItem(commodity);
+                newItem.increaseQuantity(1);
                 this.addInventoryItem(newItem);
             }
         }
-        public void addInventoryItem(InventoryItem newItem)
+        private void addInventoryItem(InventoryItem newItem)
         {
             this.inventoryItems.Add(newItem);
         }
 
-        private InventoryItem? findItemById(int inventoryItemId)
+        public InventoryItem addCommodityToInventory(Commodity commodity)
+        {
+            InventoryItem newItem = new InventoryItem(commodity);
+            this.addInventoryItem(newItem);
+            return newItem;
+        }
+
+        public InventoryItem? findItemById(int inventoryItemId)
         {
             InventoryItem? foundItem = inventoryItems.Find(item => item.getCommodityId() == inventoryItemId);
+            if (foundItem is null) return null; 
+            return foundItem;
+        }
+        
+        public InventoryItem? findItemByName(String inventoryItemName)
+        {
+            InventoryItem? foundItem = inventoryItems.Find(item => item.getCommodityName() == inventoryItemName);
             if (foundItem is null) return null; 
             return foundItem;
         }
@@ -58,6 +74,23 @@ namespace econrpg
             InventoryItem? foundItem = this.findItemById(inventoryItemId);
             if (foundItem is null) return 0;
             return foundItem.getInventoryLevel();
-        } 
+        }
+
+        public int decreaseInventoryItemLevel(int commodityId, int decreaseAmount)
+        {
+            InventoryItem? foundItem = this.findItemById(commodityId);
+            if (foundItem is null) return 0;
+            return foundItem.decreaseQuantity(decreaseAmount);
+        }
+        public int increaseInventoryItemLevel(int commodityId, int increaseAmount)
+        {
+            InventoryItem? foundItem = this.findItemById(commodityId);
+            if (foundItem is null) {
+                Commodity foundCommodity = Commodities.getOneById(commodityId);
+                foundItem = this.addCommodityToInventory(foundCommodity);
+                return foundItem.increaseQuantity(increaseAmount);
+            };
+            return foundItem.increaseQuantity(increaseAmount);
+        }
     }
 }

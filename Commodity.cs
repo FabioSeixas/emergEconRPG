@@ -23,5 +23,10 @@ namespace econrpg
         {
             return this.id;
         }
+
+        public override String ToString()
+        {
+            return $"Commodity {this.Name} / Id: {this.id}";
+        }
     }
 }

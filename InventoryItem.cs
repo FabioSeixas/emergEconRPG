@@ -32,5 +32,17 @@ namespace econrpg
         {
             return this.commodity.getName();
         }
+
+        public int decreaseQuantity(int amount)
+        {   
+            this.quantity -= amount;
+            return this.quantity;
+        }
+       
+        public int increaseQuantity(int amount)
+        {   
+            this.quantity += amount;
+            return this.quantity;
+        }
     }
 }

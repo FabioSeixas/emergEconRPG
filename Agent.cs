@@ -8,7 +8,7 @@ namespace econrpg
         {
             this.role = Role.GetRandomRole();
             inventory = new Inventory();
-            inventory.startInventory(role.getRoleCommodities());
+            inventory.startInventory(role.GetCommodities());
         }
 
         public String getCurrentRoleName()
@@ -17,12 +17,17 @@ namespace econrpg
         }
         public Role getCurrentRole()
         {
-            return role;
+            return this.role;
         }
 
         public void printInventory()
         {
             this.inventory.printInventory();
+        }
+
+        public String performProduction()
+        {
+            return this.role.production(this.inventory);
         }
 
     }
