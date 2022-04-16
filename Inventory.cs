@@ -39,7 +39,7 @@ namespace econrpg
             foreach (Commodity commodity in commodities)
             {   
                 InventoryItem newItem = new InventoryItem(commodity);
-                newItem.increaseQuantity(1);
+                newItem.increaseQuantity(10);
                 this.addInventoryItem(newItem);
             }
         }

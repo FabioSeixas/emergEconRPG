@@ -22,21 +22,30 @@ namespace econrpg
         }
 
         internal String name = "no role";
-        internal List<Commodity> commodities = new List<Commodity>();
+        internal List<RoleCommodity> roleCommodities = new List<RoleCommodity>();
 
-        internal void startRoleCommodities(String[] commoditiesName)
+        internal void startRoleCommodities(
+            String[] commoditiesName, 
+            int[] commoditiesThreshold, 
+            bool[] commoditiesProduced
+            )
         {
-            foreach (String name in commoditiesName)
+            for (int index = 0; index < commoditiesName.Length; index++)
             {   
-                Commodity? foundCommodity = Commodities.getOneByName(name);
-                if (foundCommodity is null) continue;
-                this.commodities.Add(foundCommodity);
+                Commodity? foundCommodity = Commodities.getOneByName(commoditiesName[index]);
+                this.roleCommodities.Add(
+                    new RoleCommodity(
+                        foundCommodity, 
+                        commoditiesThreshold[index], 
+                        commoditiesProduced[index]
+                        )
+                    );
             }
         }
 
         public virtual String production(Inventory inventory)
         {
-            return "[Info]: No production method yet";
+            return "[Info]: No production method for the parent Role class";
         }
 
         public String GetName()
@@ -44,9 +53,33 @@ namespace econrpg
             return this.name;
         }
 
-        public List<Commodity> GetCommodities()
+        public List<RoleCommodity> GetRoleCommodities()
         {
-            return this.commodities;
+            return this.roleCommodities;
+        }
+        public List<Commodity> GetCommodities()
+        {   
+            List<Commodity> commodities = new List<Commodity>();
+            foreach (RoleCommodity roleCommodity in this.roleCommodities)
+            {
+                commodities.Add(roleCommodity.GetCommodity());
+            } 
+            return commodities;
+        }
+
+        public RoleCommodity FindRoleCommodityById(int id)
+        {
+            try
+            {
+                RoleCommodity foundRoleCommodity = this.roleCommodities.Find(item => item.getCommodityId() == id);
+                foundRoleCommodity.getCommodityId();
+                return foundRoleCommodity;
+            }
+            catch (NullReferenceException e)
+            {   
+                Console.WriteLine($"[Error]: Commodity with id {id} was not found");
+                throw e;
+            }
         }
 
     }
@@ -56,14 +89,17 @@ namespace econrpg
         public Miner()
         {
             this.name = "Miner";
-            this.startRoleCommodities(new String[] {"Food", "Tools", "Ore"});
+            String[] commoditiesNames = new String[] {"Food", "Tools", "Ore"};
+            int[] commoditiesThresholds = new int[] {2, 1, 1};
+            bool[] commoditiesProduced = new bool[] {false, false, true};
+            this.startRoleCommodities(commoditiesNames, commoditiesThresholds, commoditiesProduced);
         }
 
         public override String production(Inventory inventory)
         {
-            Commodity foodCommodity = this.commodities[0];
-            Commodity toolsCommodity = this.commodities[1];
-            Commodity oreCommodity = this.commodities[2];
+            Commodity foodCommodity = this.roleCommodities[0].GetCommodity();
+            Commodity toolsCommodity = this.roleCommodities[1].GetCommodity();
+            Commodity oreCommodity = this.roleCommodities[2].GetCommodity();
 
             int foodLevel = inventory.getInventoryItemLevel(foodCommodity.getId());
             int toolsLevel = inventory.getInventoryItemLevel(toolsCommodity.getId());
@@ -90,14 +126,18 @@ namespace econrpg
         public Farmer()
         {
             this.name = "Farmer";
-            this.startRoleCommodities(new String[] {"Wood", "Tools", "Food"});
+
+            String[] commoditiesNames = new String[] {"Wood", "Tools", "Food"};
+            int[] commoditiesThresholds = new int[] {2, 1, 1};
+            bool[] commoditiesProduced = new bool[] {false, false, true};
+            this.startRoleCommodities(commoditiesNames, commoditiesThresholds, commoditiesProduced);
         }
 
-         public override String production(Inventory inventory)
+        public override String production(Inventory inventory)
         {
-            Commodity woodCommodity = this.commodities[0];
-            Commodity toolsCommodity = this.commodities[1];
-            Commodity foodCommodity = this.commodities[2];
+            Commodity woodCommodity = this.roleCommodities[0].GetCommodity();
+            Commodity toolsCommodity = this.roleCommodities[1].GetCommodity();
+            Commodity foodCommodity = this.roleCommodities[2].GetCommodity();
 
             int woodLevel = inventory.getInventoryItemLevel(woodCommodity.getId());
             int toolsLevel = inventory.getInventoryItemLevel(toolsCommodity.getId());
@@ -124,7 +164,35 @@ namespace econrpg
         public Woodcutter()
         {
             this.name = "Woodcutter";
-            this.startRoleCommodities(new String[] {"Food", "Tools", "Wood"});
+            String[] commoditiesNames = new String[] {"Food", "Tools", "Wood"};
+            int[] commoditiesThresholds = new int[] {2, 1, 1};
+            bool[] commoditiesProduced = new bool[] {false, false, true};
+            this.startRoleCommodities(commoditiesNames, commoditiesThresholds, commoditiesProduced);
+        }
+
+        public override String production(Inventory inventory)
+        {
+            Commodity foodCommodity = this.roleCommodities[0].GetCommodity();
+            Commodity toolsCommodity = this.roleCommodities[1].GetCommodity();
+            Commodity woodCommodity = this.roleCommodities[2].GetCommodity();
+
+            int foodLevel = inventory.getInventoryItemLevel(foodCommodity.getId());
+            int toolsLevel = inventory.getInventoryItemLevel(toolsCommodity.getId());
+
+            if (foodLevel > 1 && toolsLevel > 0)
+            {
+                inventory.decreaseInventoryItemLevel(foodCommodity.getId(), 2);
+                inventory.decreaseInventoryItemLevel(toolsCommodity.getId(), 1);
+                inventory.increaseInventoryItemLevel(woodCommodity.getId(), 2);
+                return "[Success]: 2 units of Food and 1 unit of Tools consumed \n 2 units of Wood produced";
+            } else if (foodLevel > 0 && toolsLevel > 0)
+            {
+                inventory.decreaseInventoryItemLevel(foodCommodity.getId(), 1);
+                inventory.decreaseInventoryItemLevel(toolsCommodity.getId(), 1);
+                inventory.increaseInventoryItemLevel(woodCommodity.getId(), 1);
+                return "[Success]: 1 unit of Food and 1 unit of Tools consumed / 1 unit of Wood produced";
+            }
+            return "[Failure]: No enough resources in the inventory";
         }
     }
   
@@ -133,7 +201,39 @@ namespace econrpg
         public Blacksmith()
         {
             this.name = "Blacksmith";
-            this.startRoleCommodities(new String[] {"Food", "Ore", "Tools", "Wood"});
+            String[] commoditiesNames = new String[] {"Food", "Ore", "Tools", "Wood"};
+            int[] commoditiesThresholds = new int[] {2, 1, 1, 1};
+            bool[] commoditiesProduced = new bool[] {false, false, true, false};
+            this.startRoleCommodities(commoditiesNames, commoditiesThresholds, commoditiesProduced);
+        }
+
+        public override String production(Inventory inventory)
+        {
+            Commodity foodCommodity = this.roleCommodities[0].GetCommodity();
+            Commodity oreCommodity = this.roleCommodities[1].GetCommodity();
+            Commodity toolsCommodity = this.roleCommodities[2].GetCommodity();
+            Commodity woodCommodity = this.roleCommodities[3].GetCommodity();
+
+            int foodLevel = inventory.getInventoryItemLevel(foodCommodity.getId());
+            int oreLevel = inventory.getInventoryItemLevel(oreCommodity.getId());
+            int woodLevel = inventory.getInventoryItemLevel(woodCommodity.getId());
+
+            if (foodLevel > 1 && oreLevel > 0 && woodLevel > 0)
+            {
+                inventory.decreaseInventoryItemLevel(foodCommodity.getId(), 2);
+                inventory.decreaseInventoryItemLevel(oreCommodity.getId(), 1);
+                inventory.decreaseInventoryItemLevel(woodCommodity.getId(), 1);
+                inventory.increaseInventoryItemLevel(toolsCommodity.getId(), 2);
+                return "[Success]: 2 units of Food, 1 unit of Wood and 1 unit of Ore consumed \n 2 units of Tools produced";
+            } else if (foodLevel > 0 && oreLevel > 0 && woodLevel > 0)
+            {
+                inventory.decreaseInventoryItemLevel(foodCommodity.getId(), 1);
+                inventory.decreaseInventoryItemLevel(oreCommodity.getId(), 1);
+                inventory.decreaseInventoryItemLevel(woodCommodity.getId(), 1);
+                inventory.increaseInventoryItemLevel(toolsCommodity.getId(), 1);
+                return "[Success]: 1 unit of Food, 1 unit of Wood and 1 unit of Ore consumed \n 1 unit of Tools produced";
+            }
+            return "[Failure]: No enough resources in the inventory";
         }
     }
 }

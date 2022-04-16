@@ -14,9 +14,17 @@ namespace econrpg
 
         static public Commodity? getOneByName(String name)
         {
-            Commodity? foundCommodity = commodities.Find(item => item.getName() == name);
-            if (foundCommodity is null) return null;
-            return foundCommodity;
+            try 
+            {
+                Commodity foundCommodity = commodities.Find(item => item.getName() == name);
+                foundCommodity.getId();
+                return foundCommodity;
+            }
+             catch (NullReferenceException e)
+            {   
+                Console.WriteLine($"[Error]: Commodity with name {name} was not found");
+                throw e;
+            }
         }
        
         static public Commodity getOneById(int id)
