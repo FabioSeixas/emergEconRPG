@@ -8,9 +8,10 @@ namespace econrpg
 
         private double money;
 
-        public Inventory()
+        public Inventory(List<Commodity> commodities)
         {
             this.money = 100;
+            this.startInventory(commodities);
         }
 
         public void increaseMoney(double value)
@@ -23,23 +24,29 @@ namespace econrpg
             this.money -= value;
         }
 
-        public void printInventory()
+        public void printInventory(RoleCommodities roleCommodities)
         {   
             Console.WriteLine("These are the commodities in this inventory");
-            Console.WriteLine("Name\tQntd\tId");
+            Console.WriteLine("Name\tQntd\tId\tThreshold");
             foreach (InventoryItem item in this.inventoryItems)
             {
-                Console.WriteLine($"{item.getCommodityName()}\t{item.getInventoryLevel()}\t{item.getCommodityId()}");
+                RoleCommodity roleCommodity = roleCommodities.FindRoleCommodityById(item.getCommodityId());
+                Console.WriteLine($"{item.getCommodityName()}\t{item.getInventoryLevel()}\t{item.getCommodityId()}\t{roleCommodity.getThreshold()}");
             }
         }
 
-        public void startInventory(List<Commodity> commodities)
+        public int[] getItemPriceBelief(int itemId)
+        {   
+            return this.findItemById(itemId)?.getPriceBelief(); 
+        }
+
+        private void startInventory(List<Commodity> commodities)
         {
             inventoryItems.RemoveAll(item => true);
             foreach (Commodity commodity in commodities)
             {   
                 InventoryItem newItem = new InventoryItem(commodity);
-                newItem.increaseQuantity(10);
+                newItem.increaseQuantity(Globals.inventoryItemStartAmount);
                 this.addInventoryItem(newItem);
             }
         }
@@ -91,6 +98,22 @@ namespace econrpg
                 return foundItem.increaseQuantity(increaseAmount);
             };
             return foundItem.increaseQuantity(increaseAmount);
+        }
+        public bool someItemBeyondThreshold(RoleCommodities roleCommodities)
+        {   
+            foreach (RoleCommodity roleCommodity in roleCommodities.GetRoleCommodities())
+            {
+                int fullThreshold = roleCommodity.getThreshold();
+                InventoryItem item = this.findItemById(roleCommodity.getCommodityId());
+                int inventoryLevel = item.getInventoryLevel();
+                if (roleCommodity.isProduced())
+                {
+                    if (inventoryLevel > fullThreshold) return true;
+                } else {
+                    if (inventoryLevel < fullThreshold) return true;
+                }
+            }
+            return false;
         }
     }
 }

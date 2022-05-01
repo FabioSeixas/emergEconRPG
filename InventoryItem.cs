@@ -10,18 +10,17 @@ namespace econrpg
         {
             this.commodity = commodity;
             this.quantity = 0;
-            this.priceBelief = new int[2] {0, 10}; 
+            this.priceBelief = new int[2] {Globals.defaultPriceBeliefLower, Globals.defaultPriceBeliefHigher};
         }
 
         public int getInventoryLevel()
         {
             return this.quantity;
         }       
-
-        public int[] getPriceBeliefs()
+        public int[] getPriceBelief()
         {
             return this.priceBelief;
-        }
+        }       
 
         public int getCommodityId()
         {

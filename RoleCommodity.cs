@@ -3,18 +3,20 @@ namespace econrpg
     public class RoleCommodity
     {
         Commodity commodity;
-        int threshold;
+        int fullThreshold;
+        int notFullThreshold;
         bool produced;
-        public RoleCommodity(Commodity commodity, int threshold, bool produced)
+        public RoleCommodity(Commodity commodity, int fullThreshold, int notFullThreshold, bool produced)
         {
             this.commodity = commodity;
-            this.threshold = threshold;
+            this.fullThreshold = fullThreshold;
+            this.notFullThreshold = notFullThreshold;
             this.produced = produced;
         }
 
-        public int getThreshold()
+        public int getThreshold(bool full = true)
         {
-            return this.threshold;
+            return full ? this.fullThreshold : this.notFullThreshold;
         }
         public Commodity GetCommodity()
         {
