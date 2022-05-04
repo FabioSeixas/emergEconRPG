@@ -37,7 +37,7 @@ namespace econrpg
 
         public int[] getItemPriceBelief(int itemId)
         {   
-            return this.findItemById(itemId)?.getPriceBelief(); 
+            return this.findItemById(itemId)?.getPriceBeliefs(); 
         }
 
         private void startInventory(List<Commodity> commodities)
@@ -99,21 +99,39 @@ namespace econrpg
             };
             return foundItem.increaseQuantity(increaseAmount);
         }
-        public bool someItemBeyondThreshold(RoleCommodities roleCommodities)
+        private int getAmountBeyondThreshold(int inventoryLevel, int threshold, bool isProduced)
+        {
+            int amount;
+            if (isProduced)
+            {
+                amount = inventoryLevel - threshold;
+            } else {
+                amount = threshold - inventoryLevel;
+            }
+            return amount;
+        }
+        public List<Offer> generateOffers(RoleCommodities roleCommodities)
         {   
+            List<Offer> itemsToTrade = new List<Offer>();
             foreach (RoleCommodity roleCommodity in roleCommodities.GetRoleCommodities())
             {
                 int fullThreshold = roleCommodity.getThreshold();
                 InventoryItem item = this.findItemById(roleCommodity.getCommodityId());
                 int inventoryLevel = item.getInventoryLevel();
-                if (roleCommodity.isProduced())
+                bool isProduced = roleCommodity.isProduced();
+                int amountBeyondThreshold = this.getAmountBeyondThreshold(inventoryLevel, fullThreshold, isProduced);
+                if (amountBeyondThreshold > 0)
                 {
-                    if (inventoryLevel > fullThreshold) return true;
-                } else {
-                    if (inventoryLevel < fullThreshold) return true;
+                    Offer newOffer = new Offer(
+                        isProduced ? "ask" : "bid",
+                        roleCommodity.getCommodityId(),
+                        amountBeyondThreshold,
+                        item.getValueFromPriceBeliefs()
+                    );
+                    itemsToTrade.Add(newOffer);
                 }
             }
-            return false;
+            return itemsToTrade;
         }
     }
 }

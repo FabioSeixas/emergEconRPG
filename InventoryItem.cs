@@ -2,6 +2,7 @@ namespace econrpg
 {
     public class InventoryItem
     {
+        static Random random = new Random();
         int quantity;
         int[] priceBelief;
         Commodity commodity;
@@ -17,11 +18,15 @@ namespace econrpg
         {
             return this.quantity;
         }       
-        public int[] getPriceBelief()
+        public int[] getPriceBeliefs()
         {
             return this.priceBelief;
         }       
-
+        public double getValueFromPriceBeliefs()
+        {
+            int value = random.Next(this.priceBelief[0], this.priceBelief[1]);
+            return value;
+        }       
         public int getCommodityId()
         {
             return this.commodity.getId();

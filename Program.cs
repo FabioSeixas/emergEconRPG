@@ -17,7 +17,6 @@ namespace econrpg
                 myAgent.printInventory();
                 Console.WriteLine(myAgent.performProduction());
                 myAgent.printInventory();
-                Console.WriteLine("Is some Item beyond the threshold? " + myAgent.isTradeNeeded());
 
             }
         }

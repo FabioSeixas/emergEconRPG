@@ -30,9 +30,10 @@ namespace econrpg
             return this.role.production(this.inventory);
         }
 
-        public bool isTradeNeeded()
-        {   
-            return this.inventory.someItemBeyondThreshold(this.role.GetRoleCommodities());
+        public void runIteration()
+        {
+            List<Offer> items = this.inventory.generateOffers(this.role.GetRoleCommodities());
+            if (items.Count == 0) return;
         }
 
     }
