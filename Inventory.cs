@@ -4,13 +4,15 @@ namespace econrpg
 {
     public class Inventory
     {
+        private int agentId;
         private List<InventoryItem> inventoryItems = new List<InventoryItem>();
 
         private double money;
 
-        public Inventory(List<Commodity> commodities)
+        public Inventory(int AgentId, List<Commodity> commodities)
         {
             this.money = 100;
+            this.agentId = AgentId;
             this.startInventory(commodities);
         }
 
@@ -126,7 +128,8 @@ namespace econrpg
                         isProduced ? "ask" : "bid",
                         roleCommodity.getCommodityId(),
                         amountBeyondThreshold,
-                        item.getValueFromPriceBeliefs()
+                        item.getValueFromPriceBeliefs(),
+                        this.agentId
                     );
                     itemsToTrade.Add(newOffer);
                 }

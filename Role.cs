@@ -91,7 +91,6 @@ namespace econrpg
         {
             if (this.roleCommodities.ProductionReady(inventory))
             {
-                Console.WriteLine("Full Production Started");
                 this.roleCommodities.AdjustInventoryLevels(inventory);
                 return "[Success]: 2 units of Wood and 1 unit of Tools consumed \n 2 units of Food produced";
             } else if (this.roleCommodities.ProductionReady(inventory, false))
@@ -125,7 +124,6 @@ namespace econrpg
         {
             if (this.roleCommodities.ProductionReady(inventory))
             {
-                Console.WriteLine("Full Production Started");
                 this.roleCommodities.AdjustInventoryLevels(inventory);
                 return "[Success]: 2 units of Food and 1 unit of Tools consumed \n 2 units of Wood produced";
             } else if (this.roleCommodities.ProductionReady(inventory, false))
@@ -159,7 +157,6 @@ namespace econrpg
         {
             if (this.roleCommodities.ProductionReady(inventory))
             {
-                Console.WriteLine("Full Production Started");
                 this.roleCommodities.AdjustInventoryLevels(inventory);
                 return "[Success]: 2 units of Food, 1 unit of Wood and 1 unit of Ore consumed \n 2 units of Tools produced";
             } else if (this.roleCommodities.ProductionReady(inventory, false))

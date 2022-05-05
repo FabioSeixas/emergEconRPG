@@ -7,18 +7,22 @@ namespace econrpg
         {
             String[] commoditiesNameList = {"Food", "Ore", "Tools", "Wood"};
             Commodities.startCommodities(commoditiesNameList);
+            ClearingHouse clearingHouse = new ClearingHouse();
 
             for (int i = 0; i < Globals.numberOfAgents; i++)
             {
-                Console.WriteLine("\nThis is the Agente number " + (i + 1));
                 Agent myAgent = new Agent();
+                Console.WriteLine("\nThis is the Agente number " + myAgent.Id);
                 String roleName = myAgent.getCurrentRoleName();
                 Console.WriteLine("The role of my agent is " + roleName);
                 myAgent.printInventory();
-                Console.WriteLine(myAgent.performProduction());
-                myAgent.printInventory();
-
+                List<Offer> offers = myAgent.runProductionAndOffers();
+                clearingHouse.receiveOffers(offers);
             }
+
+            clearingHouse.resolveOffers();
+
+            
         }
     }
 }
