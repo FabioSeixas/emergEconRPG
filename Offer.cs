@@ -1,6 +1,6 @@
 namespace econrpg
 {
-    public class Offer
+    public class Offer: IComparable<Offer>
     {
         public String type;
         public int commodityId;
@@ -17,6 +17,15 @@ namespace econrpg
             this.amount = amount;
             this.price = price;
             this.filledAmount = 0;
+        }
+        public int CompareTo(Offer otherOffer)
+        {
+            if (otherOffer == null) return 1;
+            return this.price.CompareTo(otherOffer.price);
+        }
+        public int getUnfilledAmount()
+        {
+            return this.amount - this.filledAmount;
         }
 
     }

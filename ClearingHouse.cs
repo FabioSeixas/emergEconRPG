@@ -13,7 +13,14 @@ namespace econrpg
             this.bookList.Add(newBook);
             return newBook;
         }
-
+        private IEnumerable<int> getListOfUniqueCommodityId()
+        {
+            return this.bookList.Select(x => x.commodityId).Distinct();
+        }
+        private List<Book> getBooksPair(int commodityId)
+        {
+            return this.bookList.FindAll(x => x.commodityId == commodityId);
+        }
         public void receiveOffers(List<Offer> offers)
         {
             foreach(Offer offer in offers)
@@ -27,12 +34,30 @@ namespace econrpg
                 newBook.addOffer(offer);
             }
         }
+
+        private Book getBookWithLessAmount(List<Book> books)
+        {
+            int first = books[0].getOffersTotalAmount();
+            int second = books[1].getOffersTotalAmount();
+            return first > second ? books[1] : books[0];
+        }
         public void resolveOffers()
         {
-            foreach (Book book in this.bookList)
+            foreach (int commodityId in getListOfUniqueCommodityId())
             {
-                Console.WriteLine("\nResult of '" + Commodities.getOneById(book.commodityId).getName() + "' commodity");
-                book.printOffers();
+                Console.WriteLine("\nResult of '" + Commodities.getOneById(commodityId).getName() + "' commodity");
+                List<Book> books = this.getBooksPair(commodityId); 
+
+                books.ForEach(x => x.sortOffers());
+                   
+                Book limitingBook = this.getBookWithLessAmount(books);
+                
+                // while (limitingBook.thereStillUnfilledOffers())
+
+                foreach (Book book in books)
+                {
+                    book.printOffers();
+                }
             }
         }
 
