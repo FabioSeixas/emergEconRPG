@@ -5,6 +5,7 @@ namespace econrpg
         public String type;
         public int commodityId;
         public int amount;
+        public int filledAmount;
         public int agentId;
         public double price;
 
@@ -15,6 +16,7 @@ namespace econrpg
             this.commodityId = commodityId;
             this.amount = amount;
             this.price = price;
+            this.filledAmount = 0;
         }
 
     }
