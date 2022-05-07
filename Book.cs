@@ -33,9 +33,21 @@ namespace econrpg
         {
             return this.offers.Aggregate(0, (total, next) => total + next.amount);
         }
-        public bool thereStillUnfilledOffers()
+        public bool stillUnfilledOffers()
         {
-            return this.offers.Exists(x => x.getUnfilledAmount() > 0);
+            return this.offers.Exists(x => x.open);
+        }
+        public Offer getOpenOfferOnTop()
+        {
+            foreach (Offer offer in this.offers)
+            {
+                if (offer.open)
+                {
+                    return offer;
+                }
+            }
+            // it should not get here
+            return this.offers[0];
         }
         public void addOffer(Offer offer)
         {
@@ -48,11 +60,12 @@ namespace econrpg
         }
         public void printOffers()
         {
-            Console.WriteLine("These are the offers in this Book");
-            Console.WriteLine("AgId\tCmmId\tType\tAmount\tPrice");
+            Console.WriteLine("\nThese are the offers in this Book");
+            Console.WriteLine("Commodity: " + Commodities.getOneById(this.commodityId).getName());
+            Console.WriteLine("AgId\tCmmId\tType\tAmount\tPrice\tOpen");
             foreach(Offer offer in this.offers)
             {
-                Console.WriteLine($"{offer.agentId}\t{offer.commodityId}\t{offer.type}\t{offer.amount}\t{offer.price}");
+                Console.WriteLine($"{offer.agentId}\t{offer.commodityId}\t{offer.type}\t{offer.amount}\t{offer.price}\t{offer.open}");
             }
         }
 

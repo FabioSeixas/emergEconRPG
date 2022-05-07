@@ -22,6 +22,11 @@ namespace econrpg
 
             clearingHouse.resolveOffers();
 
+            foreach (Book book in clearingHouse.bookList)
+            {
+                book.printOffers();
+            }
+
             
         }
     }

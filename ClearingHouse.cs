@@ -2,7 +2,7 @@ namespace econrpg
 {
     public class ClearingHouse
     {
-        private List<Book> bookList; 
+        public List<Book> bookList; 
         public ClearingHouse() {
             this.bookList = new List<Book>();
         }
@@ -19,7 +19,16 @@ namespace econrpg
         }
         private List<Book> getBooksPair(int commodityId)
         {
-            return this.bookList.FindAll(x => x.commodityId == commodityId);
+            List<Book> books = this.bookList.FindAll(x => x.commodityId == commodityId);
+            books.Sort(delegate(Book x, Book y)
+            {
+                if (x.type == null && y.type == null) return 0;
+                else if (x.type == null) return -1;
+                else if (y.type == null) return 1;
+                else return x.type.CompareTo(y.type);
+            });
+            // "ask" book will always be the index 0;
+            return books;
         }
         public void receiveOffers(List<Offer> offers)
         {
@@ -34,12 +43,32 @@ namespace econrpg
                 newBook.addOffer(offer);
             }
         }
-
         private Book getBookWithLessAmount(List<Book> books)
         {
             int first = books[0].getOffersTotalAmount();
             int second = books[1].getOffersTotalAmount();
             return first > second ? books[1] : books[0];
+        }
+        private void resolveOneExchange(Offer askOffer, Offer bidOffer)
+        {
+            Console.WriteLine(askOffer);
+            Console.WriteLine(bidOffer);
+            double meanPrice = (askOffer.price + bidOffer.price) / 2;
+            int lowerAmount = Math.Min(askOffer.getUnfilledAmount(), bidOffer.getUnfilledAmount());
+            askOffer.trade(lowerAmount, meanPrice);
+            bidOffer.trade(lowerAmount, meanPrice);
+
+            Console.WriteLine("lowerAmount " + lowerAmount);
+            Console.WriteLine("meanPrice " + meanPrice);
+            
+            Console.WriteLine("\nEnd of one Exchange");
+            Console.WriteLine("\nask results: ");
+            Console.WriteLine(askOffer.filledAmount);
+            Console.WriteLine(askOffer.wallet);
+            Console.WriteLine("\nbid results: ");
+            Console.WriteLine(bidOffer.filledAmount);
+            Console.WriteLine(bidOffer.wallet);
+            
         }
         public void resolveOffers()
         {
@@ -48,15 +77,20 @@ namespace econrpg
                 Console.WriteLine("\nResult of '" + Commodities.getOneById(commodityId).getName() + "' commodity");
                 List<Book> books = this.getBooksPair(commodityId); 
 
+                if (books.Count != 2) continue;
+
                 books.ForEach(x => x.sortOffers());
+                books.ForEach(x => x.printOffers());
                    
                 Book limitingBook = this.getBookWithLessAmount(books);
                 
-                // while (limitingBook.thereStillUnfilledOffers())
-
-                foreach (Book book in books)
+                while (limitingBook.stillUnfilledOffers())
                 {
-                    book.printOffers();
+                    Offer askOffer = books[0].getOpenOfferOnTop();
+                    Offer bidOffer = books[1].getOpenOfferOnTop();
+                    Console.WriteLine(askOffer);
+                    Console.WriteLine(bidOffer);
+                    this.resolveOneExchange(askOffer, bidOffer);
                 }
             }
         }
