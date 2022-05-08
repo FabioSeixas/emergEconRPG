@@ -51,28 +51,16 @@ namespace econrpg
         }
         private void resolveOneExchange(Offer askOffer, Offer bidOffer)
         {
-            Console.WriteLine(askOffer);
-            Console.WriteLine(bidOffer);
             double meanPrice = (askOffer.price + bidOffer.price) / 2;
             int lowerAmount = Math.Min(askOffer.getUnfilledAmount(), bidOffer.getUnfilledAmount());
             askOffer.trade(lowerAmount, meanPrice);
             bidOffer.trade(lowerAmount, meanPrice);
-
-            Console.WriteLine("lowerAmount " + lowerAmount);
-            Console.WriteLine("meanPrice " + meanPrice);
-            
-            Console.WriteLine("\nEnd of one Exchange");
-            Console.WriteLine("\nask results: ");
-            Console.WriteLine(askOffer.filledAmount);
-            Console.WriteLine(askOffer.wallet);
-            Console.WriteLine("\nbid results: ");
-            Console.WriteLine(bidOffer.filledAmount);
-            Console.WriteLine(bidOffer.wallet);
-            
         }
         public void resolveOffers()
         {
-            foreach (int commodityId in getListOfUniqueCommodityId())
+            IEnumerable<int> list = this.getListOfUniqueCommodityId();
+            Console.WriteLine("LIST: " + list.Count());
+            foreach (int commodityId in this.getListOfUniqueCommodityId())
             {
                 Console.WriteLine("\nResult of '" + Commodities.getOneById(commodityId).getName() + "' commodity");
                 List<Book> books = this.getBooksPair(commodityId); 
@@ -80,23 +68,18 @@ namespace econrpg
                 if (books.Count != 2) continue;
 
                 books.ForEach(x => x.sortOffers());
-                books.ForEach(x => x.printOffers());
                    
                 Book limitingBook = this.getBookWithLessAmount(books);
                 
-                while (limitingBook.stillUnfilledOffers())
+                while (limitingBook.stillOpenOffers())
                 {
                     Offer askOffer = books[0].getOpenOfferOnTop();
                     Offer bidOffer = books[1].getOpenOfferOnTop();
-                    Console.WriteLine(askOffer);
-                    Console.WriteLine(bidOffer);
                     this.resolveOneExchange(askOffer, bidOffer);
                 }
             }
+
+            this.bookList.ForEach(x => x.finishOffers());
         }
-
-
-
-
     }
 }

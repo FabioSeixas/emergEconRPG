@@ -11,7 +11,7 @@ namespace econrpg
 
         public Inventory(int AgentId, List<Commodity> commodities)
         {
-            this.money = 100;
+            this.money = Globals.inventoryStartMoney;
             this.agentId = AgentId;
             this.startInventory(commodities);
         }
@@ -28,6 +28,7 @@ namespace econrpg
 
         public void printInventory(RoleCommodities roleCommodities)
         {   
+            Console.WriteLine("This inventory have '" + this.money + "' of money");
             Console.WriteLine("These are the commodities in this inventory");
             Console.WriteLine("Name\tQntd\tId\tThreshold");
             foreach (InventoryItem item in this.inventoryItems)

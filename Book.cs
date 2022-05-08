@@ -29,11 +29,21 @@ namespace econrpg
             this.offers.Sort();
             if (this.type == "bid") this.offers.Reverse();
         }
+
+        public void finishOffers()
+        {
+            foreach (Offer offer in this.offers)
+            {
+                Agent agent = Agent.getAgentById(offer.agentId);
+                agent.receiveOfferResult(offer);
+            }
+            this.cleanBook();
+        }
         public int getOffersTotalAmount()
         {
             return this.offers.Aggregate(0, (total, next) => total + next.amount);
         }
-        public bool stillUnfilledOffers()
+        public bool stillOpenOffers()
         {
             return this.offers.Exists(x => x.open);
         }
@@ -51,12 +61,12 @@ namespace econrpg
         }
         public void addOffer(Offer offer)
         {
-            offers.Add(offer);
+            this.offers.Add(offer);
             this.suffleBook();
         }
-        public void cleanBook()
+        private void cleanBook()
         {
-            offers.Clear();
+            this.offers.Clear();
         }
         public void printOffers()
         {
