@@ -23,7 +23,21 @@ This is a work in progress implementation of "Emergent Economies for Role Playin
 - It is the profession.
 - Each **Agent** has one **Role**.
 - Each **Role** has unique production rules, that requires some combination of materials to create new ones.
-### 7. RoleCommodities
-- Stores specific rules for each commodity inside a **Role**
+### 7. RoleCommodity
+- Stores specific rules for one commodity inside a **Role**
 - Example: *Wood* is produced by the role **Woodcutter**, but consumed by the role **Blacksmith**. So, the **Commodity** *Wood* will be treated different by each of these roles.
+### 8. RoleCommodities
+- Put available the list of RoleCommodity instances
+### 9. Clearing House
+- It is the interface to the trade process
+- Stores the books
+- Receive offers from Agents
+- Resolves the offers (run the trade process)
+### 10. Book
+- Stores a list of Offer instances of one specific type (bid or ask) for one commodity
+- Deals with Offer class directly
+### 11. Offer
+- Store a specific offer of one Agent, one commodity, one type (bid or ask)
+- Manage the amount, price of that offer and if the offer still open or not 
+
 
