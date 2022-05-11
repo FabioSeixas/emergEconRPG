@@ -5,6 +5,7 @@ namespace econrpg
     {
         static void Main(string[] args)
         {
+            Storage storage = new Storage();
             String[] commoditiesNameList = {"Food", "Ore", "Tools", "Wood"};
             Commodities.startCommodities(commoditiesNameList);
             ClearingHouse clearingHouse = new ClearingHouse();
@@ -13,14 +14,17 @@ namespace econrpg
             {
                 Agent myAgent = new Agent();
                 String roleName = myAgent.getCurrentRoleName();
-                myAgent.printInventory();
+                storage.writeLine("agents", myAgent.ToString());
                 List<Offer> offers = myAgent.runProductionAndOffers();
-                myAgent.printInventory();
+                // myAgent.printInventory();
                 clearingHouse.receiveOffers(offers);
             }
             clearingHouse.resolveOffers();
 
-            Agent.printAgentsInventory();
+            // Agent.printAgentsInventory();
+
+            storage.closeStreams();
+
         }
     }
 }

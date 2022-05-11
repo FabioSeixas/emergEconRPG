@@ -2,7 +2,7 @@ namespace econrpg
 {
     public class Agent
     {
-        static int numberOfAgents = 0;
+        private static int numberOfAgents = 0;
         private static List<Agent> agents = new List<Agent>(); 
         private Role role;
         private Inventory inventory;
@@ -14,6 +14,11 @@ namespace econrpg
             inventory = new Inventory(this.id, role.GetCommodities());
             numberOfAgents++;
             agents.Add(this);
+        }
+
+        public override String ToString()
+        {
+            return this.id + "," + this.role.Name;
         }
 
         public static void printAgentsInventory()
