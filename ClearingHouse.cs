@@ -2,9 +2,16 @@ namespace econrpg
 {
     public class ClearingHouse
     {
+        private int round;
         public List<Book> bookList; 
         public ClearingHouse() {
+            this.round = 0;
             this.bookList = new List<Book>();
+        }
+        public int Round
+        {
+            get { return this.round; }
+            set { this.round++; }
         }
 
         private Book newBook(String type, int commodityId)
@@ -55,11 +62,12 @@ namespace econrpg
             int lowerAmount = Math.Min(askOffer.getUnfilledAmount(), bidOffer.getUnfilledAmount());
             askOffer.trade(lowerAmount, meanPrice);
             bidOffer.trade(lowerAmount, meanPrice);
+
+            StorageStatic.writeLine("trade", $"{this.round},{askOffer.commodityId},{askOffer.price},{bidOffer.price},{meanPrice},{lowerAmount}");
         }
         public void resolveOffers()
         {
             IEnumerable<int> list = this.getListOfUniqueCommodityId();
-            Console.WriteLine("LIST: " + list.Count());
             foreach (int commodityId in this.getListOfUniqueCommodityId())
             {
                 Console.WriteLine("\nResult of '" + Commodities.getOneById(commodityId).getName() + "' commodity");
@@ -77,6 +85,8 @@ namespace econrpg
                     Offer bidOffer = books[1].getOpenOfferOnTop();
                     this.resolveOneExchange(askOffer, bidOffer);
                 }
+
+                books.ForEach(x => x.printOffers());
             }
 
             this.bookList.ForEach(x => x.finishOffers());
