@@ -3,7 +3,7 @@ namespace econrpg
     public class Agent
     {
         private static int numberOfAgents = 0;
-        private static List<Agent> agents = new List<Agent>(); 
+        private static List<Agent> agents = new List<Agent>();
         private Role role;
         private Inventory inventory;
         private int id;

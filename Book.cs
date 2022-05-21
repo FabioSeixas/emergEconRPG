@@ -3,6 +3,7 @@ namespace econrpg
     public class Book
     {
         private static Random random = new Random();
+        static String[] acceptedOfferTypes = {"bid", "ask"};
         public String type;
         public int commodityId;
         List<Offer> offers;
@@ -42,6 +43,13 @@ namespace econrpg
         public int getOffersTotalAmount()
         {
             return this.offers.Aggregate(0, (total, next) => total + next.amount);
+        }
+        public double getOffersPriceAvg()
+        {
+            if (this.offers.Count() <= 0) return 0.0;
+            IEnumerable<double> offersPrices = this.offers.Select(offer => offer.price);
+            double sum = offersPrices.Aggregate(0.0, (total, price) => total + price);
+            return Math.Round(sum / offersPrices.Count(), 2); 
         }
         public bool stillOpenOffers()
         {

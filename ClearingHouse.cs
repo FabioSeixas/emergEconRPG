@@ -13,7 +13,12 @@ namespace econrpg
             get { return this.round; }
             set { this.round++; }
         }
-
+        private double getTwoBooksAmountRatio(int askTotalAmount, int bidTotalAmount)
+        {
+            if (bidTotalAmount <= 0) return 0.0;
+            double askBidAmountRatio = Convert.ToDouble(askTotalAmount) / Convert.ToDouble(bidTotalAmount);
+            return Math.Round(askBidAmountRatio, 2);
+        }
         private Book newBook(String type, int commodityId)
         {
             Book newBook = new Book(type, commodityId);
@@ -56,21 +61,30 @@ namespace econrpg
             int second = books[1].getOffersTotalAmount();
             return first > second ? books[1] : books[0];
         }
-        private void resolveOneExchange(Offer askOffer, Offer bidOffer)
+        private Exchange resolveOneExchange(Offer askOffer, Offer bidOffer)
         {
             double meanPrice = (askOffer.price + bidOffer.price) / 2;
             int lowerAmount = Math.Min(askOffer.getUnfilledAmount(), bidOffer.getUnfilledAmount());
             askOffer.trade(lowerAmount, meanPrice);
             bidOffer.trade(lowerAmount, meanPrice);
 
-            StorageStatic.writeLine("trade", $"{this.round},{askOffer.commodityId},{askOffer.price},{bidOffer.price},{meanPrice},{lowerAmount}");
+            StorageStatic.writeLine("trade", new TradeStats { 
+                AskOfferPrice = askOffer.price,
+                BidOfferPrice = bidOffer.price,
+                CommodityId = askOffer.commodityId,
+                DealPrice = meanPrice,
+                Round = this.Round,
+                TradeAmount = lowerAmount
+            });
+
+            return new Exchange { DealAmount = lowerAmount, DealPrice = meanPrice };
         }
         public void resolveOffers()
         {
             IEnumerable<int> list = this.getListOfUniqueCommodityId();
             foreach (int commodityId in this.getListOfUniqueCommodityId())
             {
-                Console.WriteLine("\nResult of '" + Commodities.getOneById(commodityId).getName() + "' commodity");
+                Exchanges exchangesList = new Exchanges();
                 List<Book> books = this.getBooksPair(commodityId); 
 
                 if (books.Count != 2) continue;
@@ -83,13 +97,55 @@ namespace econrpg
                 {
                     Offer askOffer = books[0].getOpenOfferOnTop();
                     Offer bidOffer = books[1].getOpenOfferOnTop();
-                    this.resolveOneExchange(askOffer, bidOffer);
+                    Exchange exchangeResult = this.resolveOneExchange(askOffer, bidOffer);
+                    exchangesList.addExchange(exchangeResult);
                 }
 
-                books.ForEach(x => x.printOffers());
+                // books.ForEach(x => x.printOffers());
+
+                int askTotalAmount = books[0].getOffersTotalAmount();
+                int bidTotalAmount = books[1].getOffersTotalAmount();
+
+                StorageStatic.writeLine("commodity", new CommodityStats {
+                    Round = this.Round,
+                    CommodityId = commodityId,
+                    askPriceAvg = books[0].getOffersPriceAvg(),
+                    AskTotalAmount = askTotalAmount,
+                    bidPriceAvg = books[1].getOffersPriceAvg(),
+                    BidTotalAmount = bidTotalAmount,
+                    SDRatio = this.getTwoBooksAmountRatio(askTotalAmount, bidTotalAmount),
+                    dealPriceAvg = exchangesList.getAvgDealPrice(),
+                    totalAmountTraded = exchangesList.getTotalDealAmount()
+                });
             }
 
             this.bookList.ForEach(x => x.finishOffers());
+        }
+    }
+
+    class Exchange
+    {
+        public double DealPrice { get; set; }
+        public int DealAmount { get; set; }
+    }
+
+    class Exchanges
+    {
+        private List<Exchange> exchanges = new List<Exchange>();
+        public double getAvgDealPrice()
+        {
+            if (this.exchanges.Count() <= 0) return 0.0;
+            IEnumerable<double> offersPrices = this.exchanges.Select(offer => offer.DealPrice);
+            double sum = offersPrices.Aggregate(0.0, (total, price) => total + price);
+            return Math.Round(sum / offersPrices.Count(), 2); 
+        }
+        public int getTotalDealAmount()
+        {
+            return this.exchanges.Aggregate(0, (total, current) => total + current.DealAmount);
+        }
+        public void addExchange(Exchange exchange)
+        {
+            this.exchanges.Add(exchange);
         }
     }
 }
