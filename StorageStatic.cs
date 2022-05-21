@@ -1,4 +1,3 @@
-using System.Text;
 using System.Reflection;
 
 namespace econrpg
@@ -6,34 +5,45 @@ namespace econrpg
     static class StorageStatic
     {
         private static String dir = Path.Combine(Directory.GetCurrentDirectory(), Globals.storageDir);
-        private static String[] storageFiles = {"agents", "commodity", "trade"};
+        private static String[] storageFiles = { "agents", "commodity", "trade" };
 
-        static public void writeLine(String target, Stats content)
+        static public void writeLine(String target, StatWritter content)
         {
             if (!storageFiles.Contains(target)) return;
             String filePath = Path.Combine(dir, target + ".txt");
-            UTF8Encoding encode = new UTF8Encoding(true);
             if (!File.Exists(filePath))
-            { 
-                using (StreamWriter sw = File.CreateText(filePath)){
+            {
+                using (StreamWriter sw = File.CreateText(filePath))
+                {
                     sw.WriteLine(content.writeHeader());
                     sw.WriteLine(content.writeLine());
-                } 
-            } else {
+                }
+            }
+            else
+            {
                 using (StreamWriter sw = new StreamWriter(filePath, true)) sw.WriteLine(content.writeLine());
+            }
+        }
+        static public void cleanDirectory()
+        {
+            String[] files = Directory.GetFiles(dir);
+            foreach (String path in files)
+            {
+                if (path.EndsWith(".txt"))
+                {
+                    File.Delete(path);
+                }
             }
         }
     }
 
-    public class Stats
+    public class StatWritter
     {
         internal static String separator = ";";
-        // public abstract String writeHeader();
-        // public abstract String writeLine();
         public string writeHeader()
         {
             String lineToBeWritten = "";
-            foreach(PropertyInfo prop in this.GetType().GetProperties())
+            foreach (PropertyInfo prop in this.GetType().GetProperties())
             {
                 lineToBeWritten += prop.Name + separator;
             }
@@ -42,7 +52,7 @@ namespace econrpg
         public string writeLine()
         {
             String lineToBeWritten = "";
-            foreach(PropertyInfo prop in this.GetType().GetProperties())
+            foreach (PropertyInfo prop in this.GetType().GetProperties())
             {
                 lineToBeWritten += prop.GetValue(this) + separator;
             }
@@ -50,7 +60,7 @@ namespace econrpg
         }
     }
 
-    class TradeStats : Stats
+    class TradeStats : StatWritter
     {
         public int Round { get; set; }
         public int CommodityId { get; set; }
@@ -59,7 +69,7 @@ namespace econrpg
         public double DealPrice { get; set; }
         public int TradeAmount { get; set; }
     }
-    class CommodityStats : Stats
+    class CommodityStats : StatWritter
     {
         public int Round { get; set; }
         public int CommodityId { get; set; }
