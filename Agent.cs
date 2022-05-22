@@ -40,11 +40,43 @@ namespace econrpg
             return agents.Find(x => x.id == agentId);
         }
 
+        public static void writeAgentsStatsByRound(int round, String roundTime)
+        {
+            foreach (Agent agent in agents)
+            {
+                foreach (InventoryItem item in agent.getInventoryItems())
+                {
+                    StorageStatic.writeLine(new AgentStats
+                    {
+                        Round = round,
+                        Role = agent.getCurrentRoleName(),
+                        Money = agent.getMoney(),
+                        AgentId = agent.Id,
+                        RoundTime = roundTime,
+                        CommodityId = item.getCommodityId(),
+                        InventoryLevel = item.getInventoryLevel(),
+                        lowerPriceBelief = item.getPriceBeliefs()[0],
+                        upperPricerBelief = item.getPriceBeliefs()[1]
+                    });
+                }
+
+            }
+        }
+
         public int Id
         {
             get { return this.id; }
         }
 
+        private List<InventoryItem> getInventoryItems()
+        {
+            return this.inventory.InventoryItems;
+        }
+
+        public double getMoney()
+        {
+            return this.inventory.Money;
+        }
         public String getCurrentRoleName()
         {
             return this.role.Name;

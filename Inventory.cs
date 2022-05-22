@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 
 namespace econrpg
 {
@@ -6,8 +5,17 @@ namespace econrpg
     {
         private int agentId;
         private List<InventoryItem> inventoryItems = new List<InventoryItem>();
-
         private double money;
+
+        public List<InventoryItem> InventoryItems
+        {
+            get { return this.inventoryItems; }
+        }
+
+        public double Money
+        {
+            get { return this.money; }
+        }
 
         public Inventory(int AgentId, List<Commodity> commodities)
         {
@@ -27,7 +35,7 @@ namespace econrpg
         }
 
         public void printInventory(RoleCommodities roleCommodities)
-        {   
+        {
             Console.WriteLine("This inventory have '" + this.money + "' of money");
             Console.WriteLine("These are the commodities in this inventory");
             Console.WriteLine("Name\tQntd\tId\tThreshold");
@@ -39,15 +47,15 @@ namespace econrpg
         }
 
         public int[] getItemPriceBelief(int itemId)
-        {   
-            return this.findItemById(itemId)?.getPriceBeliefs(); 
+        {
+            return this.findItemById(itemId)?.getPriceBeliefs();
         }
 
         private void startInventory(List<Commodity> commodities)
         {
             inventoryItems.RemoveAll(item => true);
             foreach (Commodity commodity in commodities)
-            {   
+            {
                 InventoryItem newItem = new InventoryItem(commodity);
                 newItem.increaseQuantity(Globals.inventoryItemStartAmount);
                 this.addInventoryItem(newItem);
@@ -68,14 +76,14 @@ namespace econrpg
         public InventoryItem? findItemById(int inventoryItemId)
         {
             InventoryItem? foundItem = inventoryItems.Find(item => item.getCommodityId() == inventoryItemId);
-            if (foundItem is null) return null; 
+            if (foundItem is null) return null;
             return foundItem;
         }
-        
+
         public InventoryItem? findItemByName(String inventoryItemName)
         {
             InventoryItem? foundItem = inventoryItems.Find(item => item.getCommodityName() == inventoryItemName);
-            if (foundItem is null) return null; 
+            if (foundItem is null) return null;
             return foundItem;
         }
 
@@ -95,7 +103,8 @@ namespace econrpg
         public int increaseInventoryItemLevel(int commodityId, int increaseAmount)
         {
             InventoryItem? foundItem = this.findItemById(commodityId);
-            if (foundItem is null) {
+            if (foundItem is null)
+            {
                 Commodity foundCommodity = Commodities.getOneById(commodityId);
                 foundItem = this.addCommodityToInventory(foundCommodity);
                 return foundItem.increaseQuantity(increaseAmount);
@@ -108,13 +117,15 @@ namespace econrpg
             if (isProduced)
             {
                 amount = inventoryLevel - threshold;
-            } else {
+            }
+            else
+            {
                 amount = threshold - inventoryLevel;
             }
             return amount;
         }
         public List<Offer> generateOffers(RoleCommodities roleCommodities)
-        {   
+        {
             List<Offer> itemsToTrade = new List<Offer>();
             foreach (RoleCommodity roleCommodity in roleCommodities.GetRoleCommodities())
             {

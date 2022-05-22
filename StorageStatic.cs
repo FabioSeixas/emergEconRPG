@@ -5,7 +5,6 @@ namespace econrpg
     static class StorageStatic
     {
         private static String dir = Path.Combine(Directory.GetCurrentDirectory(), Globals.storageDir);
-        private static String[] storageFiles = { "agents", "commodity", "trade" };
 
         static public void writeLine(StatWritter content)
         {
@@ -40,7 +39,9 @@ namespace econrpg
     {
         internal static String separator = ";";
         internal static String extension = ".txt";
-        public abstract String Filename { get; }
+        public String Filename { get { return $"{this.getFilename()}{extension}"; } }
+
+        public abstract String getFilename();
 
         public string writeHeader()
         {
@@ -66,7 +67,7 @@ namespace econrpg
 
     class TradeStats : StatWritter
     {
-        public override String Filename { get { return "trade"; } }
+        public override string getFilename() { return "trade"; }
         public int Round { get; set; }
         public int CommodityId { get; set; }
         public double AskOfferPrice { get; set; }
@@ -76,7 +77,7 @@ namespace econrpg
     }
     class CommodityStats : StatWritter
     {
-        public override String Filename { get { return "commodity"; } }
+        public override string getFilename() { return "commodity"; }
         public int Round { get; set; }
         public int CommodityId { get; set; }
         public double SDRatio { get; set; }
@@ -86,6 +87,19 @@ namespace econrpg
         public double askPriceAvg { get; set; }
         public double bidPriceAvg { get; set; }
         public double dealPriceAvg { get; set; }
+    }
+    class AgentStats : StatWritter
+    {
+        public override string getFilename() { return "agents"; }
+        public int Round { get; set; }
+        public String RoundTime { get; set; }
+        public int AgentId { get; set; }
+        public String Role { get; set; }
+        public double Money { get; set; }
+        public int CommodityId { get; set; }
+        public int InventoryLevel { get; set; }
+        public double lowerPriceBelief { get; set; }
+        public double upperPricerBelief { get; set; }
     }
 }
 

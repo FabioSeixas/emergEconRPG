@@ -22,10 +22,12 @@ namespace econrpg
 
         static void runRounds(ClearingHouse clearingHouse)
         {
-            for (int i = 0; i < Globals.numberOfRounds; i++)
+            for (int round = 0; round < Globals.numberOfRounds; round++)
             {
-                clearingHouse.Round = i;
+                clearingHouse.Round++;
+                Agent.writeAgentsStatsByRound(clearingHouse.Round, "start");
                 runRound(clearingHouse);
+                Agent.writeAgentsStatsByRound(clearingHouse.Round, "end");
             }
         }
 
@@ -37,6 +39,7 @@ namespace econrpg
                 clearingHouse.receiveOffers(offers);
             }
             clearingHouse.resolveOffers();
+
         }
     }
 }
