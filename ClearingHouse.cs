@@ -3,8 +3,9 @@ namespace econrpg
     public class ClearingHouse
     {
         private int round;
-        public List<Book> bookList; 
-        public ClearingHouse() {
+        public List<Book> bookList;
+        public ClearingHouse()
+        {
             this.round = 0;
             this.bookList = new List<Book>();
         }
@@ -32,7 +33,7 @@ namespace econrpg
         private List<Book> getBooksPair(int commodityId)
         {
             List<Book> books = this.bookList.FindAll(x => x.commodityId == commodityId);
-            books.Sort(delegate(Book x, Book y)
+            books.Sort(delegate (Book x, Book y)
             {
                 if (x.type == null && y.type == null) return 0;
                 else if (x.type == null) return -1;
@@ -44,10 +45,11 @@ namespace econrpg
         }
         public void receiveOffers(List<Offer> offers)
         {
-            foreach(Offer offer in offers)
+            foreach (Offer offer in offers)
             {
                 Book book = this.bookList.Find(x => (x.commodityId == offer.commodityId & x.type == offer.type));
-                if (book != null) {
+                if (book != null)
+                {
                     book.addOffer(offer);
                     continue;
                 }
@@ -68,7 +70,8 @@ namespace econrpg
             askOffer.trade(lowerAmount, meanPrice);
             bidOffer.trade(lowerAmount, meanPrice);
 
-            StorageStatic.writeLine("trade", new TradeStats { 
+            StorageStatic.writeLine(new TradeStats
+            {
                 AskOfferPrice = askOffer.price,
                 BidOfferPrice = bidOffer.price,
                 CommodityId = askOffer.commodityId,
@@ -85,14 +88,14 @@ namespace econrpg
             foreach (int commodityId in this.getListOfUniqueCommodityId())
             {
                 Exchanges exchangesList = new Exchanges();
-                List<Book> books = this.getBooksPair(commodityId); 
+                List<Book> books = this.getBooksPair(commodityId);
 
                 if (books.Count != 2) continue;
 
                 books.ForEach(x => x.sortOffers());
-                   
+
                 Book limitingBook = this.getBookWithLessAmount(books);
-                
+
                 while (limitingBook.stillOpenOffers())
                 {
                     Offer askOffer = books[0].getOpenOfferOnTop();
@@ -106,7 +109,8 @@ namespace econrpg
                 int askTotalAmount = books[0].getOffersTotalAmount();
                 int bidTotalAmount = books[1].getOffersTotalAmount();
 
-                StorageStatic.writeLine("commodity", new CommodityStats {
+                StorageStatic.writeLine(new CommodityStats
+                {
                     Round = this.Round,
                     CommodityId = commodityId,
                     askPriceAvg = books[0].getOffersPriceAvg(),
@@ -137,7 +141,7 @@ namespace econrpg
             if (this.exchanges.Count() <= 0) return 0.0;
             IEnumerable<double> offersPrices = this.exchanges.Select(offer => offer.DealPrice);
             double sum = offersPrices.Aggregate(0.0, (total, price) => total + price);
-            return Math.Round(sum / offersPrices.Count(), 2); 
+            return Math.Round(sum / offersPrices.Count(), 2);
         }
         public int getTotalDealAmount()
         {

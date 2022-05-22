@@ -3,7 +3,7 @@ namespace econrpg
     public class Book
     {
         private static Random random = new Random();
-        static String[] acceptedOfferTypes = {"bid", "ask"};
+        static String[] acceptedOfferTypes = { "bid", "ask" };
         public String type;
         public int commodityId;
         List<Offer> offers;
@@ -16,14 +16,15 @@ namespace econrpg
         }
         private void suffleBook()
         {
-            int n = this.offers.Count;  
-            while (n > 1) {  
-                n--;  
-                int k = random.Next(n + 1);  
-                Offer value = this.offers[k];  
-                this.offers[k] = this.offers[n];  
-                this.offers[n] = value;  
-            }  
+            int n = this.offers.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = random.Next(n + 1);
+                Offer value = this.offers[k];
+                this.offers[k] = this.offers[n];
+                this.offers[n] = value;
+            }
         }
         public void sortOffers()
         {
@@ -49,7 +50,7 @@ namespace econrpg
             if (this.offers.Count() <= 0) return 0.0;
             IEnumerable<double> offersPrices = this.offers.Select(offer => offer.price);
             double sum = offersPrices.Aggregate(0.0, (total, price) => total + price);
-            return Math.Round(sum / offersPrices.Count(), 2); 
+            return Math.Round(sum / offersPrices.Count(), 2);
         }
         public bool stillOpenOffers()
         {
@@ -81,7 +82,7 @@ namespace econrpg
             Console.WriteLine("\nThese are the offers in this Book");
             Console.WriteLine("Commodity: " + Commodities.getOneById(this.commodityId).getName());
             Console.WriteLine("AgId\tCmmId\tType\tAmount\tPrice\tOpen");
-            foreach(Offer offer in this.offers)
+            foreach (Offer offer in this.offers)
             {
                 Console.WriteLine($"{offer.agentId}\t{offer.commodityId}\t{offer.type}\t{offer.amount}\t{offer.price}\t{offer.open}");
             }

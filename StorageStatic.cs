@@ -7,10 +7,9 @@ namespace econrpg
         private static String dir = Path.Combine(Directory.GetCurrentDirectory(), Globals.storageDir);
         private static String[] storageFiles = { "agents", "commodity", "trade" };
 
-        static public void writeLine(String target, StatWritter content)
+        static public void writeLine(StatWritter content)
         {
-            if (!storageFiles.Contains(target)) return;
-            String filePath = Path.Combine(dir, target + ".txt");
+            String filePath = Path.Combine(dir, content.Filename);
             if (!File.Exists(filePath))
             {
                 using (StreamWriter sw = File.CreateText(filePath))
@@ -29,7 +28,7 @@ namespace econrpg
             String[] files = Directory.GetFiles(dir);
             foreach (String path in files)
             {
-                if (path.EndsWith(".txt"))
+                if (path.EndsWith(StatWritter.extension))
                 {
                     File.Delete(path);
                 }
@@ -37,14 +36,20 @@ namespace econrpg
         }
     }
 
-    public class StatWritter
+    abstract class StatWritter
     {
         internal static String separator = ";";
+        internal static String extension = ".txt";
+        public abstract String Filename { get; }
+
         public string writeHeader()
         {
             String lineToBeWritten = "";
             foreach (PropertyInfo prop in this.GetType().GetProperties())
             {
+                Console.WriteLine("Prop NAME: ", prop.Name);
+                Console.WriteLine("Prop Equals: ", prop.Name.Equals("Filename"));
+                if (prop.Name.Equals("Filename")) continue;
                 lineToBeWritten += prop.Name + separator;
             }
             return lineToBeWritten.Remove(lineToBeWritten.Length - 1);
@@ -54,6 +59,10 @@ namespace econrpg
             String lineToBeWritten = "";
             foreach (PropertyInfo prop in this.GetType().GetProperties())
             {
+                Console.WriteLine("Prop: ", prop);
+                Console.WriteLine("Prop NAME: ", prop.Name);
+                Console.WriteLine("Prop Equals: ", prop.Name.Equals("Filename"));
+                if (prop.Name.Equals("Filename")) continue;
                 lineToBeWritten += prop.GetValue(this) + separator;
             }
             return lineToBeWritten.Remove(lineToBeWritten.Length - 1);
@@ -62,6 +71,7 @@ namespace econrpg
 
     class TradeStats : StatWritter
     {
+        public override String Filename { get { return "trade"; } }
         public int Round { get; set; }
         public int CommodityId { get; set; }
         public double AskOfferPrice { get; set; }
@@ -71,6 +81,7 @@ namespace econrpg
     }
     class CommodityStats : StatWritter
     {
+        public override String Filename { get { return "commodity"; } }
         public int Round { get; set; }
         public int CommodityId { get; set; }
         public double SDRatio { get; set; }
