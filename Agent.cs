@@ -7,6 +7,12 @@ namespace econrpg
         private Role role;
         private Inventory inventory;
         private int id;
+
+        public static List<Agent> AgentsList
+        {
+            get { return agents; }
+        }
+
         public Agent()
         {
             this.id = numberOfAgents;
@@ -23,7 +29,7 @@ namespace econrpg
 
         public static void printAgentsInventory()
         {
-            foreach(Agent agent in agents)
+            foreach (Agent agent in agents)
             {
                 agent.printInventory();
             }
@@ -73,7 +79,8 @@ namespace econrpg
             {
                 this.inventory.decreaseInventoryItemLevel(offer.commodityId, offer.filledAmount);
                 this.inventory.increaseMoney(offer.wallet);
-            } else
+            }
+            else
             {
                 this.inventory.increaseInventoryItemLevel(offer.commodityId, offer.filledAmount);
                 this.inventory.decreaseMoney(offer.wallet);

@@ -47,8 +47,6 @@ namespace econrpg
             String lineToBeWritten = "";
             foreach (PropertyInfo prop in this.GetType().GetProperties())
             {
-                Console.WriteLine("Prop NAME: ", prop.Name);
-                Console.WriteLine("Prop Equals: ", prop.Name.Equals("Filename"));
                 if (prop.Name.Equals("Filename")) continue;
                 lineToBeWritten += prop.Name + separator;
             }
@@ -59,9 +57,6 @@ namespace econrpg
             String lineToBeWritten = "";
             foreach (PropertyInfo prop in this.GetType().GetProperties())
             {
-                Console.WriteLine("Prop: ", prop);
-                Console.WriteLine("Prop NAME: ", prop.Name);
-                Console.WriteLine("Prop Equals: ", prop.Name.Equals("Filename"));
                 if (prop.Name.Equals("Filename")) continue;
                 lineToBeWritten += prop.GetValue(this) + separator;
             }

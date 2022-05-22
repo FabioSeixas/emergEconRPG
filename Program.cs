@@ -10,34 +10,28 @@ namespace econrpg
             Commodities.startCommodities(commoditiesNameList);
             ClearingHouse clearingHouse = new ClearingHouse();
 
-            List<Agent> agents = createAgents();
+            createAgents();
 
-            runRounds(agents, clearingHouse);
+            runRounds(clearingHouse);
         }
 
-        static List<Agent> createAgents()
+        static void createAgents()
         {
-            List<Agent> agents = new List<Agent>();
-            for (int i = 0; i < Globals.numberOfAgents; i++)
-            {
-                Agent newAgent = new Agent();
-                agents.Add(newAgent);
-            }
-            return agents;
+            for (int i = 0; i < Globals.numberOfAgents; i++) new Agent();
         }
 
-        static void runRounds(List<Agent> agents, ClearingHouse clearingHouse)
+        static void runRounds(ClearingHouse clearingHouse)
         {
             for (int i = 0; i < Globals.numberOfRounds; i++)
             {
                 clearingHouse.Round = i;
-                runRound(agents, clearingHouse);
+                runRound(clearingHouse);
             }
         }
 
-        static void runRound(List<Agent> agents, ClearingHouse clearingHouse)
+        static void runRound(ClearingHouse clearingHouse)
         {
-            foreach (Agent agent in agents)
+            foreach (Agent agent in Agent.AgentsList)
             {
                 List<Offer> offers = agent.runProductionAndOffers();
                 clearingHouse.receiveOffers(offers);
