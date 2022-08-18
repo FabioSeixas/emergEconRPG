@@ -38,7 +38,7 @@ namespace econrpg
     abstract class StatWritter
     {
         internal static String separator = ";";
-        internal static String extension = ".txt";
+        internal static String extension = "";
         public String Filename { get { return $"{this.getFilename()}{extension}"; } }
 
         public abstract String getFilename();
