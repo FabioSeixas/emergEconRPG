@@ -7,12 +7,19 @@ namespace econrpg
         {
             StorageStatic.cleanDirectory();
             String[] commoditiesNameList = { "Food", "Ore", "Tools", "Wood" };
+            // RulesReader.readRules();
+            // foreach (ProductionRule rule in ProductionRule.ProductionRules)
+            // {
+            //     Console.WriteLine(rule.roleName);
+            //     rule.print();
+            // }
+            RulesReader.readRules();
             Commodities.startCommodities(commoditiesNameList);
             ClearingHouse clearingHouse = new ClearingHouse();
 
-            createAgents();
+            // createAgents();
 
-            runRounds(clearingHouse);
+            // runRounds(clearingHouse);
         }
 
         static void createAgents()

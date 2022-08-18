@@ -2,3 +2,4 @@
 \bin
 \.vscode
 \storage/*.txt
+.tool-versions
