@@ -1,5 +1,5 @@
 {
-  "RoleName": "blacksmith",
+  "RoleName": "miner",
   "rulesByOutputAmount": [
     {
       "OutputAmount": 3,
