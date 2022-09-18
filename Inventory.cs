@@ -17,11 +17,11 @@ namespace econrpg
             get { return this.money; }
         }
 
-        public Inventory(int AgentId, List<Commodity> commodities)
+        public Inventory(int AgentId, RoleProductionRules roleProductionRules)
         {
             this.money = Globals.inventoryStartMoney;
             this.agentId = AgentId;
-            this.startInventory(commodities);
+            this.startInventory(roleProductionRules);
         }
 
         public void increaseMoney(double value)
@@ -34,27 +34,34 @@ namespace econrpg
             this.money -= value;
         }
 
-        public void printInventory(RoleCommodities roleCommodities)
-        {
-            Console.WriteLine("This inventory have '" + this.money + "' of money");
-            Console.WriteLine("These are the commodities in this inventory");
-            Console.WriteLine("Name\tQntd\tId\tThreshold");
-            foreach (InventoryItem item in this.inventoryItems)
-            {
-                RoleCommodity roleCommodity = roleCommodities.FindRoleCommodityById(item.getCommodityId());
-                Console.WriteLine($"{item.getCommodityName()}\t{item.getInventoryLevel()}\t{item.getCommodityId()}\t{roleCommodity.getThreshold()}");
-            }
-        }
+        // public void printInventory(RoleCommodities roleCommodities)
+        // {
+        //     Console.WriteLine("This inventory have '" + this.money + "' of money");
+        //     Console.WriteLine("These are the commodities in this inventory");
+        //     Console.WriteLine("Name\tQntd\tId\tThreshold");
+        //     foreach (InventoryItem item in this.inventoryItems)
+        //     {
+        //         RoleCommodity roleCommodity = roleCommodities.FindRoleCommodityById(item.getCommodityId());
+        //         Console.WriteLine($"{item.getCommodityName()}\t{item.getInventoryLevel()}\t{item.getCommodityId()}\t{roleCommodity.getThreshold()}");
+        //     }
+        // }
 
         public int[] getItemPriceBelief(int itemId)
         {
             return this.findItemById(itemId)?.getPriceBeliefs();
         }
 
-        private void startInventory(List<Commodity> commodities)
+        private void startInventory(RoleProductionRules roleProductionRules)
         {
             inventoryItems.RemoveAll(item => true);
-            foreach (Commodity commodity in commodities)
+            List<Commodity> agentCommodities = new List<Commodity>();
+            ProductionRule oneProductionRule = roleProductionRules.rulesByOutputAmount.First();
+            agentCommodities.Add(Commodities.getOneById(oneProductionRule.OutputId));
+            foreach (RecipeItem recipeItem in oneProductionRule.Resources)
+            {
+                agentCommodities.Add(Commodities.getOneById(recipeItem.CommodityId));
+            }
+            foreach (Commodity commodity in agentCommodities)
             {
                 InventoryItem newItem = new InventoryItem(commodity);
                 newItem.increaseQuantity(Globals.inventoryItemStartAmount);
@@ -111,6 +118,14 @@ namespace econrpg
             };
             return foundItem.increaseQuantity(increaseAmount);
         }
+        public void adjustInventoryLevelsAccordingToProductionRule(ProductionRule rule)
+        {
+            foreach (RecipeItem recipeItem in rule.Resources)
+            {
+                decreaseInventoryItemLevel(recipeItem.CommodityId, recipeItem.Amount);
+            }
+            increaseInventoryItemLevel(rule.OutputId, rule.OutputAmount);
+        }
         private int getAmountBeyondThreshold(int inventoryLevel, int threshold, bool isProduced)
         {
             int amount;
@@ -124,27 +139,28 @@ namespace econrpg
             }
             return amount;
         }
-        public List<Offer> generateOffers(RoleCommodities roleCommodities)
+        private Offer generateOneOffer(int commodityId, String offerType)
+        {
+            InventoryItem item = this.findItemById(commodityId);
+            if (item is null) throw new Exception("Inventory item with id " + commodityId + " was not found.");
+            if (!offerType.Equals("ask") && !offerType.Equals("bid")) throw new Exception("offerType must be bid or ask");
+            return new Offer(
+                offerType,
+                commodityId,
+                // TODO: Need to get the amount beyond threshold for type "bid"
+                // See previous version of Inventory class in git history.
+                item.getInventoryLevel(),
+                item.getValueFromPriceBeliefs(),
+                this.agentId
+            );
+        }
+        public List<Offer> generateOffers(ProductionRule productionRule)
         {
             List<Offer> itemsToTrade = new List<Offer>();
-            foreach (RoleCommodity roleCommodity in roleCommodities.GetRoleCommodities())
+            itemsToTrade.Add(generateOneOffer(productionRule.OutputId, "ask"));
+            foreach (RecipeItem recipeItem in productionRule.Resources)
             {
-                int fullThreshold = roleCommodity.getThreshold();
-                InventoryItem item = this.findItemById(roleCommodity.getCommodityId());
-                int inventoryLevel = item.getInventoryLevel();
-                bool isProduced = roleCommodity.isProduced();
-                int amountBeyondThreshold = this.getAmountBeyondThreshold(inventoryLevel, fullThreshold, isProduced);
-                if (amountBeyondThreshold > 0)
-                {
-                    Offer newOffer = new Offer(
-                        isProduced ? "ask" : "bid",
-                        roleCommodity.getCommodityId(),
-                        amountBeyondThreshold,
-                        item.getValueFromPriceBeliefs(),
-                        this.agentId
-                    );
-                    itemsToTrade.Add(newOffer);
-                }
+                itemsToTrade.Add(generateOneOffer(recipeItem.CommodityId, "bid"));
             }
             return itemsToTrade;
         }

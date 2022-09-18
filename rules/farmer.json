@@ -1,32 +1,26 @@
 {
-  "RoleName": "farmer",
+  "RoleName": "Farmer",
   "rulesByOutputAmount": [
     {
-      "OutputAmount": 3,
+      "OutputId": 1,
+      "OutputAmount": 2,
       "Resources": [
         {
-          "CommodityId": 1,
-          "Amount": 2
-        },
-        {
-          "CommodityId": 2,
+          "CommodityId": 4,
           "Amount": 2
         },
         {
           "CommodityId": 3,
-          "Amount": 2
+          "Amount": 1
         }
       ]
     },
     {
-      "OutputAmount": 2,
+      "OutputId": 1,
+      "OutputAmount": 1,
       "Resources": [
         {
-          "CommodityId": 1,
-          "Amount": 2
-        },
-        {
-          "CommodityId": 2,
+          "CommodityId": 4,
           "Amount": 1
         },
         {

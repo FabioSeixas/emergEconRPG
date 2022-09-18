@@ -1,24 +1,8 @@
 {
-  "RoleName": "miner",
+  "RoleName": "Miner",
   "rulesByOutputAmount": [
     {
-      "OutputAmount": 3,
-      "Resources": [
-        {
-          "CommodityId": 1,
-          "Amount": 2
-        },
-        {
-          "CommodityId": 2,
-          "Amount": 2
-        },
-        {
-          "CommodityId": 3,
-          "Amount": 2
-        }
-      ]
-    },
-    {
+      "OutputId": 2,
       "OutputAmount": 2,
       "Resources": [
         {
@@ -26,11 +10,21 @@
           "Amount": 2
         },
         {
-          "CommodityId": 2,
+          "CommodityId": 3,
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "OutputId": 2,
+      "OutputAmount": 1,
+      "Resources": [
+        {
+          "CommodityId": 1,
           "Amount": 1
         },
         {
-          "CommodityId": 3,
+          "CommodityId": 2,
           "Amount": 1
         }
       ]

@@ -17,7 +17,7 @@ namespace econrpg
         {
             this.id = numberOfAgents;
             this.role = Role.GetRandomRole();
-            inventory = new Inventory(this.id, role.GetCommodities());
+            inventory = new Inventory(this.id, role.getProductionRules());
             numberOfAgents++;
             agents.Add(this);
         }
@@ -27,13 +27,13 @@ namespace econrpg
             return this.id + "," + this.role.Name;
         }
 
-        public static void printAgentsInventory()
-        {
-            foreach (Agent agent in agents)
-            {
-                agent.printInventory();
-            }
-        }
+        // public static void printAgentsInventory()
+        // {
+        //     foreach (Agent agent in agents)
+        //     {
+        //         agent.printInventory();
+        //     }
+        // }
 
         public static Agent getAgentById(int agentId)
         {
@@ -86,22 +86,22 @@ namespace econrpg
             return this.role;
         }
 
-        public void printInventory()
-        {
-            Console.WriteLine("\nThis is the Agente number " + this.id);
-            Console.WriteLine("The role of this agent is " + this.role);
-            this.inventory.printInventory(this.role.GetRoleCommodities());
-        }
+        // public void printInventory()
+        // {
+        //     Console.WriteLine("\nThis is the Agente number " + this.id);
+        //     Console.WriteLine("The role of this agent is " + this.role);
+        //     this.inventory.printInventory(this.role.GetRoleCommodities());
+        // }
 
-        public String performProduction()
+        public ProductionRule performProduction()
         {
             return this.role.production(this.inventory);
         }
 
         public List<Offer> runProductionAndOffers()
         {
-            this.performProduction();
-            List<Offer> items = this.inventory.generateOffers(this.role.GetRoleCommodities());
+            ProductionRule productionRuleDone = this.performProduction();
+            List<Offer> items = this.inventory.generateOffers(productionRuleDone);
             if (items.Count == 0) Console.WriteLine("The agent " + this.id + " did not trade.");
             return items;
         }

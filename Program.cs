@@ -10,18 +10,12 @@ namespace econrpg
             Commodities.startCommodities(commoditiesNameList);
 
             RulesReader.readRules();
-            Console.WriteLine(RoleProductionRules.roles);
-
-            foreach (RoleProductionRules produRules in RoleProductionRules.roles)
-            {
-                produRules.print();
-            }
+            Console.WriteLine(RoleProductionRules.productionRulesList);
 
             ClearingHouse clearingHouse = new ClearingHouse();
 
-            // createAgents();
-
-            // runRounds(clearingHouse);
+            createAgents();
+            runRounds(clearingHouse);
         }
 
         static void createAgents()
